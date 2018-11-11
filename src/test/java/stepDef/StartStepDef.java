@@ -1,7 +1,12 @@
 package stepDef;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -18,6 +23,8 @@ public class StartStepDef {
 
 	By CookiesAcceptButton = By.cssSelector("a.cc-btn.cc-dismiss");
 	By escape = By.cssSelector(".content-wrapper");
+	By logRegislink = By.cssSelector("#myAccountDropdown > button > span > svg");
+	By regisElement = By.cssSelector("a._1k1reGo[href*='https://my.asos.com/identity']");
 
 	@Given("^The new user is on homepage$")
 	public void the_new_user_is_on_homepage() throws Throwable {
@@ -26,34 +33,20 @@ public class StartStepDef {
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--disable-infobars");
 		WebDriver driver = new ChromeDriver(options);
-		driver.get("https://www.summit.co.uk/");
+		driver.get("https://www.asos.com/");
 		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.MILLISECONDS);
-		driver.findElement(CookiesAcceptButton).click();
 
-		try {
+		WebElement target = driver.findElement(logRegislink);
+		Actions action = new Actions(driver);
+		action.moveToElement(target).build().perform();
 
-			driver.get("http://swisnl.github.io/jQuery-contextMenu/demo.html");
-			driver.manage().window().maximize();
-			Thread.sleep(2000);
-			Actions action = new Actions(driver);
-			By locator = By.cssSelector(".context-menu-one");
-			Thread.sleep(2000);
-			WebDriverWait wait = new WebDriverWait(driver, 5);
-			wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-			Thread.sleep(2000);
-			WebElement rightClickElement = driver.findElement(locator);
-
-			action.contextClick(rightClickElement).build().perform();
-			WebElement getCopyText = driver.findElement(By.cssSelector(".context-menu-icon-copy"));
-
-			String GetText = getCopyText.getText();
-			Thread.sleep(2000);
-			System.out.println(GetText);
-
-		} catch (Exception e) {
-			System.out.println(e);
-		}
+		WebDriverWait wait = new WebDriverWait(driver, 20);
+		WebElement regisLink = wait.until(ExpectedConditions.elementToBeClickable(regisElement));
+		regisLink.click();
+//	    Added a method for screenshot 
+		File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+		FileUtils.copyFile(screenshotFile, new File("D:\\Screenshot.jpg"));
 
 	}
 
